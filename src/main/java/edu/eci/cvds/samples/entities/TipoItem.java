@@ -1,16 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package edu.eci.cvds.samples.entities;
 
 import java.io.Serializable;
 
-/**
- *
- * @author 2106913
- */
 public class TipoItem implements Serializable{
     private int id;
     private String descripcion;
@@ -22,9 +14,6 @@ public class TipoItem implements Serializable{
 
     public TipoItem() {
     }
-    
-    
-    
 
     public int getID() {
         return id;

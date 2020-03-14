@@ -1,19 +1,5 @@
-/*
- * Copyright (C) 2015 hcadavid
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+
+
 package edu.eci.cvds.sampleprj.jdbc.example;
 
 import java.sql.Connection;
@@ -26,30 +12,30 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author hcadavid
- */
 public class JDBCExample {
+    
+    private static final String SQL_INSERT_REGISTRAR_NUEVO_PRODUCTO = "INSERT INTO ORD_PRODUCTOS(codigo, nombre, precio) VALUES (?,?,?)";
+    private static final String SQL_SELECT_NOMBRES_PRODUCTOS_PEDIDOS = "SELECT nombre FROM ORD_PRODUCTOS WHERE codigo = ?";
+    private static final String SQL_SELECT_VALOR_TOTAL_PEDIDO = "SELECT SUM(cantidad*ORD_PRODUCTOS.precio) FROM ORD_DETALLE_PEDIDO,ORD_PRODUCTOS WHERE producto_fk = ORD_PRODUCTOS.codigo && pedido_fk = ?;";
     
     public static void main(String args[]){
         try {
-            String url="jdbc:mysql://HOST:3306/BD";
+            String url="jdbc:mysql://desarrollo.is.escuelaing.edu.co:3306/bdprueba";
             String driver="com.mysql.jdbc.Driver";
-            String user="USER";
-            String pwd="PWD";
+            String user="bdprueba";
+            String pwd="prueba2020";
                         
             Class.forName(driver);
             Connection con=DriverManager.getConnection(url,user,pwd);
             con.setAutoCommit(false);
                  
             
-            System.out.println("Valor total pedido 1:"+valorTotalPedido(con, 1));
+            System.out.println("Valor total pedido 1: "+valorTotalPedido(con, 1));
             
-            List<String> prodsPedido=nombresProductosPedido(con, 1);
+            List<String> prodsPedido=nombresProductosPedido(con, 214);
             
             
-            System.out.println("Productos del pedido 1:");
+            System.out.println("Productos del pedido 1: ");
             System.out.println("-----------------------");
             for (String nomprod:prodsPedido){
                 System.out.println(nomprod);
@@ -57,8 +43,10 @@ public class JDBCExample {
             System.out.println("-----------------------");
             
             
-            int suCodigoECI=20134423;
-            registrarNuevoProducto(con, suCodigoECI, "SU NOMBRE", 99999999);            
+            int suCodigoECI = 545646444;
+            registrarNuevoProducto(con, suCodigoECI, "Juanpis", 45);   
+            
+            
             con.commit();
                         
             
@@ -80,13 +68,32 @@ public class JDBCExample {
      * @throws SQLException 
      */
     public static void registrarNuevoProducto(Connection con, int codigo, String nombre,int precio) throws SQLException{
+        
+        PreparedStatement st = null;
+        
+        int filas = 0;
+        
+        //con.getConnection();
+        st = con.prepareStatement(SQL_INSERT_REGISTRAR_NUEVO_PRODUCTO);
+        int index = 1; //Contador de columnas
+        
+        st.setInt(index++, codigo);
+        st.setString(index++, nombre);
+        st.setInt(index++, precio);
+        System.out.println("Ejecutando query: " + SQL_INSERT_REGISTRAR_NUEVO_PRODUCTO);
+
+        filas = st.executeUpdate(); //Numero de filas afectadas
+        System.out.println("Número de filas insertadas: " + filas);
+        
+       
+        
         //Crear preparedStatement
         //Asignar parámetros
         //usar 'execute'
 
         
         con.commit();
-        
+        //con.close();
     }
     
     /**
@@ -96,13 +103,36 @@ public class JDBCExample {
      * @return 
      */
     public static List<String> nombresProductosPedido(Connection con, int codigoPedido){
-        List<String> np=new LinkedList<>();
-        
+                
         //Crear prepared statement
         //asignar parámetros
         //usar executeQuery
         //Sacar resultados del ResultSet
         //Llenar la lista y retornarla
+        
+        List<String> np=new LinkedList<>();
+        PreparedStatement st = null;
+        
+        ResultSet rs = null;
+        String nombre = null;
+        
+        try{
+            
+            //con.getConnection();
+            st = con.prepareStatement(SQL_SELECT_NOMBRES_PRODUCTOS_PEDIDOS);
+            st.setInt(1, codigoPedido);
+            rs = st.executeQuery();
+            
+            while(rs.next()){
+                nombre = rs.getString(1);
+                np.add(nombre);
+            }
+
+            
+            //con.close();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }        
         
         return np;
     }
@@ -115,13 +145,35 @@ public class JDBCExample {
      * @return el costo total del pedido (suma de: cantidades*precios)
      */
     public static int valorTotalPedido(Connection con, int codigoPedido){
-        
         //Crear prepared statement
         //asignar parámetros
         //usar executeQuery
         //Sacar resultado del ResultSet
         
-        return 0;
+        PreparedStatement st = null;
+        
+        ResultSet rs = null;
+        int valorTotal = 0;        
+
+        
+        try{
+            
+            //con.getConnection();
+            st = con.prepareStatement(SQL_SELECT_VALOR_TOTAL_PEDIDO);
+            st.setInt(1, codigoPedido);
+            rs = st.executeQuery();
+            
+            while(rs.next()){
+                valorTotal = rs.getInt(1);                
+            }
+
+            
+            //con.close();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }              
+        
+        return valorTotal;
     }
     
 

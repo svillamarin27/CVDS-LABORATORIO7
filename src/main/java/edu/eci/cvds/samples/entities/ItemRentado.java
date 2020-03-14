@@ -1,17 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package edu.eci.cvds.samples.entities;
 
 import java.io.Serializable;
 import java.sql.Date;
 
-/**
- *
- * @author 2106913
- */
+
 public class ItemRentado implements Serializable {
 
     private int id;

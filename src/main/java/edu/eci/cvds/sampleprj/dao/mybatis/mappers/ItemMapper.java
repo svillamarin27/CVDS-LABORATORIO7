@@ -7,18 +7,15 @@ import org.apache.ibatis.annotations.Param;
 
 import edu.eci.cvds.samples.entities.Item;
 
-/**
- *
- * @author 2106913
- */
+
 public interface ItemMapper {
     
     
     public List<Item> consultarItems();        
     
-    public Item consultarItem(int id);
+    public Item consultarItem(@Param("itid") int id);
     
-    public void insertarItem(Item it);
+    public void insertarItem(@Param("it") Item it);
 
         
 }
